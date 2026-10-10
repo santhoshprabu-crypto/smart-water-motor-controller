@@ -11,8 +11,8 @@ I live on the second floor and the motor switch is downstairs. I built this so I
 - Demo video: *add your LinkedIn post link here*
 - Wokwi project: *add the link here after removing your token from the code*
 
-![App screenshot](screenshots/app.png)
-![Circuit screenshot](screenshots/circuit.png)
+![App screenshot](app.png)
+![Circuit screenshot](circuit.png)
 
 ## How it works
 
