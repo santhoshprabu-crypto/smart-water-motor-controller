@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07202e">
+<title>Water Motor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #07202e;
+    --deep: #0e3a56;
+    --water: #35b4f0;
+    --water-deep: #1b7fc4;
+    --foam: #e8f7fd;
+    --slate: #7e94a4;
+    --mint: #5be0b0;
+    --coral: #ff7a6b;
+    --line: rgba(232, 247, 253, 0.14);
+    --glass: rgba(255, 255, 255, 0.05);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    color: var(--foam);
+    font-family: "Sora", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(ellipse 90% 60% at 50% 0%, var(--deep) 0%, var(--ink) 70%) fixed;
+    background-color: var(--ink);
+    display: flex;
+    justify-content: center;
+  }
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: calc(22px + env(safe-area-inset-top, 0px)) 22px calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ---------- Header ---------- */
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--slate); font-size: 13px; margin-top: 2px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 13px; border-radius: 999px;
+    background: var(--glass); border: 1px solid var(--line);
+    font-size: 13px; font-weight: 500; white-space: nowrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--slate); }
+  .pill.online .dot { background: var(--mint); animation: ping 2s ease-out infinite; }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(91, 224, 176, 0.55); }
+    100% { box-shadow: 0 0 0 9px rgba(91, 224, 176, 0); }
+  }
+
+  /* ---------- Main: the water tank button ---------- */
+  #main { flex: 1; display: flex; flex-direction: column; }
+  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 0; }
+
+  .tank {
+    position: relative;
+    width: min(72vw, 270px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid rgba(232, 247, 253, 0.28);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--foam);
+    font-family: inherit;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 0 0 12px rgba(53, 180, 240, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.8s ease, border-color 0.8s ease, opacity 0.4s ease;
+  }
+  .tank:active:not(:disabled) { transform: scale(0.96); }
+  .tank:focus-visible { outline: 3px solid var(--water); outline-offset: 8px; }
+  .tank.on {
+    border-color: rgba(53, 180, 240, 0.7);
+    box-shadow: 0 0 0 12px rgba(53, 180, 240, 0.10), 0 0 70px rgba(53, 180, 240, 0.35);
+  }
+  .tank:disabled { cursor: not-allowed; opacity: 0.5; }
+
+  .water {
+    position: absolute; inset: 0;
+    background: linear-gradient(var(--water), var(--water-deep));
+    transform: translateY(calc(100% + 24px));
+    transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tank.on .water { transform: translateY(14%); }
+  .wave {
+    position: absolute; left: 0; width: 100%; height: 20px;
+    background-repeat: repeat-x; background-size: 100px 20px;
+  }
+  .wave.w1 {
+    top: -22px; animation: drift 4.5s linear infinite reverse;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0 10Q25 0 50 10T100 10V20H0Z' fill='%2335b4f0' fill-opacity='.45'/%3E%3C/svg%3E");
+  }
+  .wave.w2 {
+    top: -16px; animation: drift 3s linear infinite;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0 10Q25 0 50 10T100 10V20H0Z' fill='%2335b4f0'/%3E%3C/svg%3E");
+  }
+  @keyframes drift { to { background-position-x: 100px; } }
+
+  .face {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    text-shadow: 0 1px 10px rgba(7, 32, 46, 0.45);
+  }
+  .face .big { font-size: 46px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .face .hint { font-size: 13px; font-weight: 500; opacity: 0.85; }
+
+  .status { margin-top: 30px; font-size: 22px; font-weight: 600; text-align: center; letter-spacing: -0.01em; }
+  .timer { margin-top: 6px; min-height: 22px; font-size: 15px; color: var(--slate); font-variant-numeric: tabular-nums; text-align: center; }
+  .err { min-height: 20px; margin-top: 10px; font-size: 14px; color: var(--coral); text-align: center; }
+
+  footer { text-align: center; }
+  button.link {
+    background: none; border: 0; color: var(--slate); font-family: inherit;
+    font-size: 13px; cursor: pointer; padding: 10px; text-decoration: underline; text-underline-offset: 3px;
+  }
+  button.link:hover { color: var(--foam); }
+  button.link:focus-visible { outline: 2px solid var(--water); border-radius: 6px; }
+
+  /* ---------- Setup screen ---------- */
+  #setup { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .card {
+    background: var(--glass); border: 1px solid var(--line);
+    border-radius: 22px; padding: 26px 22px;
+  }
+  .drop { width: 44px; height: 44px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 6px; font-size: 20px; font-weight: 600; }
+  .card p { margin: 0 0 18px; font-size: 14px; color: var(--slate); line-height: 1.55; }
+  input {
+    width: 100%; padding: 14px; border-radius: 12px;
+    border: 1px solid var(--line); background: rgba(7, 32, 46, 0.6);
+    color: var(--foam); font-family: inherit; font-size: 15px; margin-bottom: 12px;
+  }
+  input::placeholder { color: var(--slate); }
+  input:focus-visible { outline: 2px solid var(--water); border-color: transparent; }
+  button.main {
+    width: 100%; padding: 14px; border: 0; border-radius: 12px;
+    background: var(--water); color: var(--ink);
+    font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  button.main:hover { background: #5cc4f5; }
+  button.main:focus-visible { outline: 3px solid var(--foam); outline-offset: 3px; }
+
+  .hidden { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave, .pill.online .dot { animation: none; }
+    .water { transition-duration: 0.01s; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>Water Motor</h1>
+      <div class="sub">Remote control</div>
+    </div>
+    <div class="pill hidden" id="pill"><span class="dot"></span><span id="devText">Checking</span></div>
+  </header>
+
+  <!-- Setup screen -->
+  <section id="setup" class="hidden">
+    <div class="card">
+      <svg class="drop" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 4C24 4 9 20 9 30a15 15 0 0 0 30 0C39 20 24 4 24 4Z" fill="#35b4f0"/>
+        <path d="M17 31a7 7 0 0 0 7 7" stroke="#e8f7fd" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+      <h2>Connect your motor</h2>
+      <p>Paste your Blynk Auth Token. It stays on this device only.</p>
+      <input id="tokenInput" type="password" placeholder="Auth Token" autocomplete="off" aria-label="Blynk Auth Token">
+      <button class="main" id="saveBtn">Connect</button>
+    </div>
+  </section>
+
+  <!-- Main screen -->
+  <section id="main" class="hidden">
+    <div class="stage">
+      <button class="tank" id="tank" disabled aria-pressed="false" aria-label="Water motor power">
+        <div class="water"><div class="wave w1"></div><div class="wave w2"></div></div>
+        <div class="face">
+          <span class="big" id="big">OFF</span>
+          <span class="hint" id="hint">Checking device</span>
+        </div>
+      </button>
+      <div class="status" id="status" aria-live="polite">Loading</div>
+      <div class="timer" id="timer"></div>
+      <div class="err" id="err" role="alert"></div>
+    </div>
+    <footer><button class="link" id="resetBtn">Change token</button></footer>
+  </section>
+</div>
+
+<script>
+  const BASE = "https://blr1.blynk.cloud/external/api/";   // BLR1 region
+  const $ = id => document.getElementById(id);
+  let token = "", motorOn = false, online = false, connected = true, startedAt = null, busy = false;
+
+  try { token = localStorage.getItem("blynk_token") || ""; } catch (e) {}
+
+  function api(path) {
+    return fetch(BASE + path).then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    });
+  }
+
+  function render() {
+    const tank = $("tank");
+    tank.classList.toggle("on", motorOn && connected);
+    tank.setAttribute("aria-pressed", String(motorOn));
+    tank.disabled = !online || !connected || busy;
+
+    $("big").textContent = motorOn ? "ON" : "OFF";
+    $("pill").className = "pill" + (online && connected ? " online" : "");
+    $("devText").textContent = !connected ? "No connection" : online ? "Device online" : "Device offline";
+
+    if (!connected)      { $("hint").textContent = "Not connected";  $("status").textContent = "Can't reach Blynk"; }
+    else if (!online)    { $("hint").textContent = "Device offline"; $("status").textContent = "Motor controller is offline"; }
+    else if (busy)       { $("hint").textContent = "Switching";      $("status").textContent = motorOn ? "Stopping motor" : "Starting motor"; }
+    else if (motorOn)    { $("hint").textContent = "Tap to stop";    $("status").textContent = "Motor running"; }
+    else                 { $("hint").textContent = "Tap to start";   $("status").textContent = "Motor stopped"; }
+  }
+
+  async function refresh() {
+    if (!token) return;
+    try {
+      const [v, hw] = await Promise.all([
+        api(`get?token=${token}&v0`),
+        api(`isHardwareConnected?token=${token}`)
+      ]);
+      online = hw.trim() === "true";
+      const on = v.replace(/[\[\]"\s]/g, "") === "1";
+      if (on && !motorOn) startedAt = Date.now();
+      if (!on) startedAt = null;
+      motorOn = on;
+      connected = true;
+      $("err").textContent = "";
+    } catch (e) {
+      connected = false;
+      $("err").textContent = "Check your internet connection and your token.";
+    }
+    render();
+  }
+
+  async function toggle() {
+    if (navigator.vibrate) navigator.vibrate(30);
+    busy = true; render();
+    try {
+      await api(`update?token=${token}&v0=${motorOn ? 0 : 1}`);
+      busy = false;
+      await refresh();
+    } catch (e) {
+      busy = false;
+      $("err").textContent = "The command didn't go through. Tap to try again.";
+      render();
+    }
+  }
+
+  function tick() {
+    if (motorOn && startedAt && connected) {
+      const s = Math.floor((Date.now() - startedAt) / 1000);
+      $("timer").textContent = "Running for " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+    } else {
+      $("timer").textContent = "";
+    }
+  }
+
+  function show() {
+    $("setup").classList.toggle("hidden", !!token);
+    $("main").classList.toggle("hidden", !token);
+    $("pill").classList.toggle("hidden", !token);
+    if (token) { render(); refresh(); }
+  }
+
+  $("saveBtn").onclick = () => {
+    const t = $("tokenInput").value.trim();
+    if (!t) return;
+    token = t;
+    try { localStorage.setItem("blynk_token", t); } catch (e) {}
+    show();
+  };
+  $("tokenInput").addEventListener("keydown", e => { if (e.key === "Enter") $("saveBtn").click(); });
+  $("resetBtn").onclick = () => {
+    token = ""; motorOn = false; online = false; connected = true;
+    try { localStorage.removeItem("blynk_token"); } catch (e) {}
+    show();
+  };
+  $("tank").onclick = toggle;
+
+  setInterval(refresh, 3000);
+  setInterval(tick, 1000);
+  show();
+</script>
+</body>
+</html>
