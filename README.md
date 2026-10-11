@@ -8,7 +8,7 @@ I live on the second floor and the motor switch is downstairs. I built this so I
 
 ## Demo
 
-- Demo video: *add your LinkedIn post link here*
+- Demo video: https://lnkd.in/p/gqURhvHw
 - Wokwi project: https://wokwi.com/projects/477428742938390529
 
 ![App screenshot](app.png)
